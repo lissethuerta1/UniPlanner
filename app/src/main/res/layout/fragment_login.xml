@@ -89,10 +89,11 @@
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegistrarse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="54dp"
-                android:text="Sign in" />
+                android:text="Registrarse" />
 
             <View
                 android:layout_width="match_parent"
