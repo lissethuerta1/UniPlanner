@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.example.uniplanner.databinding.FragmentLoginBinding
 
@@ -22,9 +23,40 @@ class LoginFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        setupValidation()
         binding.btnRegistrarse.setOnClickListener{
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
         return binding.root
     }
+
+    private fun setupValidation(){
+        binding.btnRegistrarse.isEnabled = false
+        binding.emailText.addTextChangedListener{
+            validarFields()
+        }
+        binding.passwordText.addTextChangedListener {
+
+        }
+    }
+
+    private fun validarFields(){
+        val email = binding.emailText.text.toString().trim()
+        val password = binding.passwordText.text.toString().trim()
+
+        val isEmailValid = isValidEmail(email)
+        val isPasswordValid = password.length >= 8
+
+        binding.emailText.error = if (email.isNotEmpty() || isEmailValid) null else "correo invalido"
+        binding.passwordText.error = if (password.isNotEmpty() || isPasswordValid) null else "Minimo 8 caracteres"
+
+        binding.btnRegistrarse.isEnabled =
+            email.isNotEmpty() && password.isNotEmpty() && isEmailValid && isPasswordValid
+    }
+
+    private fun isValidEmail(email: String) : Boolean{
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 }
+
+

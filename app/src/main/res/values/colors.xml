@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="mainBackgroundBtn">#FA9EF4 </color>
+    <color name="disabled"> #949292 </color>
+
+    <color name="textButton">#000000</color>
+    <color name="disabledTextBtn">#AF0DA7</color>
+
+
 </resources>

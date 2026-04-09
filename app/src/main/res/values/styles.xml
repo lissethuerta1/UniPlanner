@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MainButton" parent="Widget.Material3.Button">
+        <item name="android:textAllCaps"> false </item>
+        <item name="cornerRadius"> 12dp </item>
+
+        <!-- color fondo -->
+        <item name="backgroundTint"> @color/mainBackgroundBtn </item>
+
+        <!-- color texto -->
+        <item name="android:textColor"> @color/textButton</item>
+        <item name="android:textSize"> 20sp</item>
+        <item name="android:textStyle"> bold</item>
+
+    </style>
+
+</resources>
+
