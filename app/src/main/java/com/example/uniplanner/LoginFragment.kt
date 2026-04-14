@@ -23,20 +23,27 @@ class LoginFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+
         setupValidation()
-        binding.btnRegistrarse.setOnClickListener{
+
+        binding.textRegistrarse.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
+
+        binding.textForgot.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_passwordFragment2)
+        }
+
         return binding.root
     }
 
     private fun setupValidation(){
-        binding.btnRegistrarse.isEnabled = false
+        binding.btnIngresar.isEnabled = false
         binding.emailText.addTextChangedListener{
             validarFields()
         }
         binding.passwordText.addTextChangedListener {
-
+            validarFields()
         }
     }
 
@@ -50,7 +57,7 @@ class LoginFragment : Fragment() {
         binding.emailText.error = if (email.isNotEmpty() || isEmailValid) null else "correo invalido"
         binding.passwordText.error = if (password.isNotEmpty() || isPasswordValid) null else "Minimo 8 caracteres"
 
-        binding.btnRegistrarse.isEnabled =
+        binding.btnIngresar.isEnabled =
             email.isNotEmpty() && password.isNotEmpty() && isEmailValid && isPasswordValid
     }
 

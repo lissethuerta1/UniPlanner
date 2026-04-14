@@ -5,10 +5,10 @@
         <item name="cornerRadius"> 12dp </item>
 
         <!-- color fondo -->
-        <item name="backgroundTint"> @color/mainBackgroundBtn </item>
+        <item name="backgroundTint"> @color/button_background </item>
 
         <!-- color texto -->
-        <item name="android:textColor"> @color/textButton</item>
+        <item name="android:textColor"> @color/text_button</item>
         <item name="android:textSize"> 20sp</item>
         <item name="android:textStyle"> bold</item>
 
