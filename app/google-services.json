@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "792271533829",
+    "project_id": "uniplanner-af0f0",
+    "storage_bucket": "uniplanner-af0f0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792271533829:android:320ff96bd0c9c62509696c",
+        "android_client_info": {
+          "package_name": "com.example.uniplanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcN52y-51zgOOVJ7M6ITi1kb3Yv8XpTXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
