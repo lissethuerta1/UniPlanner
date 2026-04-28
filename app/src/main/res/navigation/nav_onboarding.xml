@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/registroFragment"
-        android:name="com.example.uniplanner.RegistroFragment"
+        android:name="com.example.uniplanner.signup.RegistroFragment"
         android:label="fragment_registro"
         tools:layout="@layout/fragment_registro" />
 
