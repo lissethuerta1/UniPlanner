@@ -1,4 +1,4 @@
-package com.example.uniplanner.signup
+package com.example.uniplanner
 
 import android.os.Bundle
 import android.view.LayoutInflater

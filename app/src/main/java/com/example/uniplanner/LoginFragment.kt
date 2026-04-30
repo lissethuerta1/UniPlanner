@@ -10,11 +10,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.uniplanner.core.FragmentCommunicator
 import com.example.uniplanner.databinding.FragmentLoginBinding
+import com.example.uniplanner.signup.SignUpViewModel
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by viewModels<SignInViewModel>()
+    private val viewModel by viewModels<SignUpViewModel>()
     private lateinit var communicator: FragmentCommunicator
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +72,7 @@ class LoginFragment : Fragment() {
     private fun isValidEmail(email: String) : Boolean{
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
+
 }
 
 

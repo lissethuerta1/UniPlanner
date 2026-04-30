@@ -35,7 +35,7 @@ class AuthRepository(): Authentication {
         password: String
     ): ResponseService<FirebaseUser> = withContext(Dispatchers.IO){
         try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
+            val result = auth.createUserWithEmailAndPassword(email,password).await()
             result.user?.let { ResponseService.Success(it)}
                 ?: ResponseService.Error("No se pudo crear el usuario")
         } catch (e: FirebaseAuthInvalidCredentialsException) {

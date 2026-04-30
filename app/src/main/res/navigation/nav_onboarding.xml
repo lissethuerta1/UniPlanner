@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.uniplanner.SignUpFragment"
+        android:name="com.example.uniplanner.signup.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action
@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/registroFragment"
-        android:name="com.example.uniplanner.signup.RegistroFragment"
+        android:name="com.example.uniplanner.signup.SignUpFragment"
         android:label="fragment_registro"
         tools:layout="@layout/fragment_registro" />
 
