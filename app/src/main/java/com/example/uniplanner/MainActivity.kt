@@ -27,6 +27,6 @@ class MainActivity : AppCompatActivity(), FragmentCommunicator{
     }
 
     override fun manageLoader(isVisible: Boolean) {
-        binding.fragmentContainerView.isVisible = isVisible //loaderView
+        binding.loaderView.isVisible = isVisible //loaderView
     }
 }

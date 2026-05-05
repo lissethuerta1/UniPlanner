@@ -10,12 +10,18 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.uniplanner.core.FragmentCommunicator
 import com.example.uniplanner.databinding.FragmentLoginBinding
-import com.example.uniplanner.signup.SignUpViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.uniplanner.core.ResponseService
+import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.viewModels
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by viewModels<SignUpViewModel>()
+    private val viewModel by viewModels<SignInViewModel>()
     private lateinit var communicator: FragmentCommunicator
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,8 +38,6 @@ class LoginFragment : Fragment() {
 
         setupValidation()
 
-        communicator.manageLoader(true)
-
         binding.textRegistrarse.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
@@ -42,6 +46,14 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_loginFragment_to_passwordFragment2)
         }
 
+        binding.btnIngresar.setOnClickListener {
+            val email = binding.emailText.text.toString().trim()
+            val password = binding.passwordText.text.toString().trim()
+
+            viewModel.requestLogin(email, password)
+        }
+
+        observeState()
         return binding.root
     }
 
@@ -62,8 +74,8 @@ class LoginFragment : Fragment() {
         val isEmailValid = isValidEmail(email)
         val isPasswordValid = password.length >= 8
 
-        binding.emailText.error = if (email.isNotEmpty() || isEmailValid) null else "correo invalido"
-        binding.passwordText.error = if (password.isNotEmpty() || isPasswordValid) null else "Minimo 8 caracteres"
+        binding.emailText.error = if (email.isNotEmpty() && isEmailValid) null else "correo invalido"
+        binding.passwordText.error = if (password.isNotEmpty() && isPasswordValid) null else "Minimo 8 caracteres"
 
         binding.btnIngresar.isEnabled =
             email.isNotEmpty() && password.isNotEmpty() && isEmailValid && isPasswordValid
@@ -73,6 +85,36 @@ class LoginFragment : Fragment() {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    private fun observeState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.signInState.collect { state ->
+                    when (state) {
+                        is ResponseService.Loading -> {
+                            communicator.manageLoader(true)
+                            binding.btnIngresar.isEnabled = false
+                        }
+                        is ResponseService.Success -> {
+                            communicator.manageLoader(false)
+
+                            // navegar al home
+                        }
+                        is ResponseService.Error -> {
+                            communicator.manageLoader(false)
+                            binding.btnIngresar.isEnabled = true
+
+                            Snackbar.make(
+                                binding.root,
+                                state.error,
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                        null -> Unit
+                    }
+                }
+            }
+        }
+    }
 }
 
 

@@ -24,7 +24,8 @@ class RegistroFragment : Fragment() {
         _binding = FragmentRegistroBinding.inflate(inflater, container, false)
 
         binding.btnBackRegistro.setOnClickListener {
-            findNavController().navigateUp()
+            findNavController()
+                .navigate(R.id.action_registroFragment_to_loginFragment)
         }
 
         return binding.root
