@@ -1,13 +1,15 @@
-package com.example.uniplanner
+package com.example.uniplanner.onboarding.signin
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.uniplanner.core.AuthRepository
-import com.example.uniplanner.core.ResponseService
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.uniplanner.core.AuthRepository
+import com.example.uniplanner.core.ResponseService
+
 class SignInViewModel: ViewModel() {
 
     private val repository = AuthRepository()
@@ -23,7 +25,7 @@ class SignInViewModel: ViewModel() {
 
     fun validateEmail(email: String): String? {
         if (email.isBlank()) return "El correo es obligatorio"
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
             return "Correo inválido"
         return null
     }

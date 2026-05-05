@@ -1,4 +1,4 @@
-package com.example.uniplanner
+package com.example.uniplanner.onboarding
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import com.example.uniplanner.R
 import com.example.uniplanner.core.FragmentCommunicator
 import com.example.uniplanner.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity(), FragmentCommunicator{
     private lateinit var binding: ActivityMainBinding

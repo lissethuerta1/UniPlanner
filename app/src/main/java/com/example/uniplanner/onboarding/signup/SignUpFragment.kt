@@ -1,22 +1,21 @@
-package com.example.uniplanner.signup
+package com.example.uniplanner.onboarding.signup
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.uniplanner.R
-import com.example.uniplanner.databinding.FragmentSignUpBinding
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.uniplanner.core.ResponseService
+import androidx.navigation.fragment.findNavController
+import com.example.uniplanner.R
 import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.viewModels
+import kotlinx.coroutines.launch
+import com.example.uniplanner.databinding.FragmentSignUpBinding
 import com.example.uniplanner.core.FragmentCommunicator
-
+import com.example.uniplanner.core.ResponseService
 
 class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null

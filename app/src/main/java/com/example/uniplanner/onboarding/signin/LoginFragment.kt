@@ -1,22 +1,23 @@
-package com.example.uniplanner
+package com.example.uniplanner.onboarding.signin
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.example.uniplanner.core.FragmentCommunicator
-import com.example.uniplanner.databinding.FragmentLoginBinding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.uniplanner.R
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import com.example.uniplanner.databinding.FragmentLoginBinding
+import com.example.uniplanner.core.FragmentCommunicator
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.uniplanner.core.ResponseService
-import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.viewModels
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
@@ -59,7 +60,7 @@ class LoginFragment : Fragment() {
 
     private fun setupValidation(){
         binding.btnIngresar.isEnabled = false
-        binding.emailText.addTextChangedListener{
+        binding.emailText.addTextChangedListener {
             validarFields()
         }
         binding.passwordText.addTextChangedListener {
@@ -82,7 +83,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun isValidEmail(email: String) : Boolean{
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun observeState() {
@@ -116,5 +117,3 @@ class LoginFragment : Fragment() {
         }
     }
 }
-
-
