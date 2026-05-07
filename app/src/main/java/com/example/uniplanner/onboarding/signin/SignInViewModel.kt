@@ -9,12 +9,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.uniplanner.core.AuthRepository
 import com.example.uniplanner.core.ResponseService
+import kotlinx.coroutines.flow.asStateFlow
 
 class SignInViewModel: ViewModel() {
 
     private val repository = AuthRepository()
     private val _signInState = MutableStateFlow<ResponseService<FirebaseUser>?>(null)
-    val signInState: StateFlow<ResponseService<FirebaseUser>?> = _signInState
+    val signInState: StateFlow<ResponseService<FirebaseUser>?> = _signInState.asStateFlow()
 
     fun requestLogin(email: String, password: String) {
         viewModelScope.launch {

@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity(), FragmentCommunicator{
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -29,6 +28,6 @@ class MainActivity : AppCompatActivity(), FragmentCommunicator{
     }
 
     override fun manageLoader(isVisible: Boolean) {
-        binding.loaderView.isVisible = isVisible //loaderView
+        binding.loaderView.isVisible = isVisible
     }
 }
