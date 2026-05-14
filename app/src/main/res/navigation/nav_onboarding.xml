@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.uniplanner.LoginFragment"
+        android:name="com.example.uniplanner.onboarding.signin.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -19,24 +19,24 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.uniplanner.signup.SignUpFragment"
+        android:name="com.example.uniplanner.onboarding.signup.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action
-            android:id="@+id/action_signUpFragment_to_registroFragment"
-            app:destination="@id/registroFragment" />
+            android:id="@+id/action_signUpFragment_to_personalInfoFragment"
+            app:destination="@id/personalInfoFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/passwordFragment"
-        android:name="com.example.uniplanner.PasswordFragment"
+        android:name="com.example.uniplanner.onboarding.extra.PasswordFragment"
         android:label="fragment_password"
         tools:layout="@layout/fragment_password" />
 
     <fragment
-        android:id="@+id/registroFragment"
-        android:name="com.example.uniplanner.RegistroFragment"
-        android:label="fragment_registro"
-        tools:layout="@layout/fragment_registro"/>
+        android:id="@+id/personalInfoFragment"
+        android:name="com.example.uniplanner.onboarding.personal.PersonalInfoFragment"
+        android:label="fragment_personal_info"
+        tools:layout="@layout/fragment_personal_info"/>
 
 </navigation>

@@ -2,7 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@drawable/home_ic"
+        android:title="Home"/>
+    <item
+        android:id="@+id/horarioFragment"
+        android:icon="@drawable/horario_ic"
+        android:title="Horario"/>
+    <item
+        android:id="@+id/tareasFragment"
+        android:icon="@drawable/notas_ic"
+        android:title="Tareas"/>
+    <item
         android:id="@+id/cuentaFragment"
-        android:
+        android:icon="@drawable/cuenta_ic"
+        android:title="Cuenta"/>
 
 </menu>

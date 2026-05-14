@@ -1,7 +1,6 @@
 package com.example.uniplanner.onboarding.signin
 
 import android.os.Bundle
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.uniplanner.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import com.example.uniplanner.databinding.FragmentLoginBinding
 import com.example.uniplanner.core.FragmentCommunicator
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.uniplanner.core.ResponseService
 
 class LoginFragment : Fragment() {
@@ -25,20 +24,39 @@ class LoginFragment : Fragment() {
     private val viewModel by viewModels<SignInViewModel>()
     private lateinit var communicator: FragmentCommunicator
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         communicator = requireActivity() as FragmentCommunicator
 
-        setupValidation()
+        setupClickListeners()
+        observeState()
+    }
 
+    private fun setupValidation() {
+        binding.btnIngresar.isEnabled = false
+        binding.emailText.addTextChangedListener { validateAndEnable() }
+        binding.passwordText.addTextChangedListener { validateAndEnable() }
+    }
+
+    private fun validateAndEnable() {
+        val email = binding.emailText.text.toString().trim()
+        val password = binding.passwordText.text.toString().trim()
+
+        binding.emailText.error = viewModel.validateEmail(email)
+        binding.passwordText.error = viewModel.validatePassword(password)
+        binding.btnIngresar.isEnabled = viewModel.isLoginFormValid(email, password)
+    }
+
+    private fun setupClickListeners() {
         binding.textRegistrarse.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
@@ -48,47 +66,32 @@ class LoginFragment : Fragment() {
         }
 
         binding.btnIngresar.setOnClickListener {
+            cleanErrors()
+
             val email = binding.emailText.text.toString().trim()
             val password = binding.passwordText.text.toString().trim()
 
-            viewModel.requestLogin(email, password)
-        }
+            val emailError = viewModel.validateEmail(email)
+            val passwordError = viewModel.validatePassword(password)
 
-        observeState()
-        return binding.root
-    }
-
-    private fun setupValidation(){
-        binding.btnIngresar.isEnabled = false
-        binding.emailText.addTextChangedListener {
-            validarFields()
-        }
-        binding.passwordText.addTextChangedListener {
-            validarFields()
+            if (emailError == null && passwordError == null) {
+                binding.btnIngresar.isEnabled = false
+                viewModel.requestLogin(email, password)
+            } else {
+                if (emailError != null) binding.emailText.error = emailError
+                if (passwordError != null) binding.passwordText.error = passwordError
+            }
         }
     }
 
-    private fun validarFields(){
-        val email = binding.emailText.text.toString().trim()
-        val password = binding.passwordText.text.toString().trim()
-
-        val isEmailValid = isValidEmail(email)
-        val isPasswordValid = password.length >= 8
-
-        binding.emailText.error = if (email.isNotEmpty() && isEmailValid) null else "correo invalido"
-        binding.passwordText.error = if (password.isNotEmpty() && isPasswordValid) null else "Minimo 8 caracteres"
-
-        binding.btnIngresar.isEnabled =
-            email.isNotEmpty() && password.isNotEmpty() && isEmailValid && isPasswordValid
-    }
-
-    private fun isValidEmail(email: String) : Boolean{
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun cleanErrors() {
+        binding.emailText.error = null
+        binding.passwordText.error = null
     }
 
     private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.signInState.collect { state ->
                     when (state) {
                         is ResponseService.Loading -> {
@@ -97,8 +100,7 @@ class LoginFragment : Fragment() {
                         }
                         is ResponseService.Success -> {
                             communicator.manageLoader(false)
-
-                            // navegar al home
+                            binding.btnIngresar.isEnabled = true
                         }
                         is ResponseService.Error -> {
                             communicator.manageLoader(false)
@@ -110,10 +112,17 @@ class LoginFragment : Fragment() {
                                 Snackbar.LENGTH_LONG
                             ).show()
                         }
-                        null -> Unit
+                        null -> {
+                            binding.btnIngresar.isEnabled = true
+                        }
                     }
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_home">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_home"
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.example.uniplanner.home.dashboard.DashboardFragment"
+        android:label="Inicio"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/tareasFragment"
+        android:name="com.example.uniplanner.home.tareas.TareasFragment"
+        android:label="Tareas"
+        tools:layout="@layout/fragment_tareas" />
+
+    <fragment
+        android:id="@+id/horarioFragment"
+        android:name="com.example.uniplanner.home.horario.HorarioFragment"
+        android:label="Horario"
+        tools:layout="@layout/fragment_horario" />
+
+    <fragment
+        android:id="@+id/cuentaFragment"
+        android:name="com.example.uniplanner.home.cuenta.CuentaFragment"
+        android:label="Perfil"
+        tools:layout="@layout/fragment_cuenta" />
 
 </navigation>
