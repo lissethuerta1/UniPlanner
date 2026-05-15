@@ -37,6 +37,7 @@ class SignUpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         communicator = requireActivity() as FragmentCommunicator
+        setupValidation()
         setupClickListeners()
         observeState()
     }

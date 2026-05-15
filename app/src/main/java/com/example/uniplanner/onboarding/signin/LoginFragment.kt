@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import com.example.uniplanner.databinding.FragmentLoginBinding
 import com.example.uniplanner.core.FragmentCommunicator
 import com.example.uniplanner.core.ResponseService
+import android.content.Intent
+import com.example.uniplanner.home.HomeActivity
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
@@ -36,7 +38,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         communicator = requireActivity() as FragmentCommunicator
-
+        setupValidation()
         setupClickListeners()
         observeState()
     }
@@ -101,6 +103,10 @@ class LoginFragment : Fragment() {
                         is ResponseService.Success -> {
                             communicator.manageLoader(false)
                             binding.btnIngresar.isEnabled = true
+
+                            val intent = Intent(requireContext(), HomeActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
                         }
                         is ResponseService.Error -> {
                             communicator.manageLoader(false)

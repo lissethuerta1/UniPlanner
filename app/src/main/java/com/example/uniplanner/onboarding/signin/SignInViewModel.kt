@@ -26,7 +26,7 @@ class SignInViewModel: ViewModel() {
 
     fun validatePassword(password: String): String? {
         if (password.isBlank()) return "La contraseña es requerida"
-        if (password.length < 8) return "Mínimo 8 caracteres"
+        if (password.length < 8) return "Contraseña incorrecta"
         return null
     }
 
@@ -39,7 +39,7 @@ class SignInViewModel: ViewModel() {
     fun requestLogin(email: String, password: String) {
         viewModelScope.launch {
             _signInState.value = ResponseService.Loading
-            _signInState.value = authRepository.requestSignUp(email, password)
+            _signInState.value = authRepository.requestLogin(email, password)
         }
     }
 }
