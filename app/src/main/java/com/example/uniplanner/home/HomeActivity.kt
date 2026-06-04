@@ -9,9 +9,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.uniplanner.R
 import com.example.uniplanner.databinding.ActivityHomeBinding
+import androidx.activity.viewModels
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
+
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +27,7 @@ class HomeActivity : AppCompatActivity() {
             insets
         }
         setupNavigation()
+        viewModel.getHomeData()
     }
 
     fun setupNavigation() {

@@ -94,18 +94,35 @@ class PersonalInfoFragment : Fragment() {
 
     private fun setupClickListeners() {
         binding.btnGuardar.setOnClickListener {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid == null) {
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user == null) {
                 Snackbar.make(binding.root, "Sesión inválida", Snackbar.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            viewModel.saveProfile(
-                uid = uid,
-                firstName = binding.nombreText.text.toString().trim(),
-                lastName = binding.apellidosText.text.toString().trim(),
-                birthDate = binding.fechaNText.text.toString().trim(),
-                phone = binding.telefonoText.text.toString().trim()
-            )
+
+            // 1. Capturamos el nombre del campo de texto
+            val nombreCompleto = "${binding.nombreText.text.toString().trim()} ${binding.apellidosText.text.toString().trim()}".trim()
+
+            // Actualizamos el DisplayName en Firebase Auth para que aparezca en el Perfil
+            val profileUpdates = com.google.firebase.auth.userProfileChangeRequest {
+                displayName = nombreCompleto
+            }
+
+            user.updateProfile(profileUpdates)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // El nombre local de la sesión se actualizó con éxito
+                        viewModel.saveProfile(
+                            uid = user.uid,
+                            firstName = binding.nombreText.text.toString().trim(),
+                            lastName = binding.apellidosText.text.toString().trim(),
+                            birthDate = binding.fechaNText.text.toString().trim(),
+                            phone = binding.telefonoText.text.toString().trim()
+                        )
+                    } else {
+                        Snackbar.make(binding.root, "Error al sincronizar el nombre de usuario", Snackbar.LENGTH_SHORT).show()
+                    }
+                }
         }
     }
 

@@ -7,11 +7,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.uniplanner.databinding.FragmentHorarioBinding
+import com.example.uniplanner.home.HomeViewModel
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.uniplanner.core.ResponseService
+import com.example.uniplanner.core.model.HorarioModel
 
 class HorarioFragment : Fragment() {
-
     private var _binding: FragmentHorarioBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: HomeViewModel by activityViewModels()
+    private var horarioAdapter: HorarioAdapter? = null
+    private var todasLasClases: List<HorarioModel> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,10 +32,31 @@ class HorarioFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Detectar cuál día (Chip) de Material Design 3 se seleccionó
+        binding.rvClasesHorario.layoutManager = LinearLayoutManager(requireContext())
+
+        // Escuchamos la API
+        viewModel.homeDataState.observe(viewLifecycleOwner) { estado ->
+            when (estado) {
+                is ResponseService.Loading -> {}
+                is ResponseService.Success -> {
+                    // Pasamos la lista de clases de internet al adaptador
+                    todasLasClases = estado.data.horario
+
+                    // Inicializamos el adaptador con el lunes por defecto
+                    val clasesLunes = todasLasClases.filter { it.dias.contains("Lunes", ignoreCase = true) }
+                    horarioAdapter = HorarioAdapter(clasesLunes)
+                    binding.rvClasesHorario.adapter = horarioAdapter
+                }
+
+                is ResponseService.Error -> {
+                    Toast.makeText(requireContext(), estado.error, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         binding.chipGroupDias.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.isNotEmpty()) {
-                val selectedDay = when (checkedIds.first()) {
+                val diaSeleccionado = when (checkedIds.first()) {
                     binding.chipLunes.id -> "Lunes"
                     binding.chipMartes.id -> "Martes"
                     binding.chipMiercoles.id -> "Miércoles"
@@ -35,8 +64,8 @@ class HorarioFragment : Fragment() {
                     binding.chipViernes.id -> "Viernes"
                     else -> "Lunes"
                 }
-                // Aquí en el futuro se filtrara la información de la base de datos por el día elegido
-                Toast.makeText(requireContext(), "Mostrando: $selectedDay", Toast.LENGTH_SHORT).show()
+                val clasesFiltradas = todasLasClases.filter { it.dias.contains(diaSeleccionado, ignoreCase = true) }
+                horarioAdapter?.updateList(clasesFiltradas)
             }
         }
     }
