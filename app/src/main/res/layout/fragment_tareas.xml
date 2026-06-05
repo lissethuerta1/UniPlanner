@@ -50,11 +50,32 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <HorizontalScrollView
+        android:id="@+id/scrollChips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:background="#F8FAFC"
+        app:layout_constraintTop_toBottomOf="@id/headerCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupMaterias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            app:singleSelection="true"
+            app:selectionRequired="true" />
+    </HorizontalScrollView>
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/headerCard"
+        app:layout_constraintTop_toBottomOf="@id/scrollChips"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -66,6 +87,7 @@
             android:padding="20dp">
 
             <LinearLayout
+                android:id="@+id/TextoSuperiorTareass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -140,7 +162,8 @@
         android:id="@+id/fabAddTarea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="30dp"
         android:text="Nueva Tarea"
         android:fontFamily="sans-serif-medium"
         android:textColor="#FFFFFF"

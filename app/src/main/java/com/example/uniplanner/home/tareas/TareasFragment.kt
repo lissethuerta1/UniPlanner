@@ -14,6 +14,7 @@ import com.example.uniplanner.home.HomeViewModel
 import com.example.uniplanner.R
 import androidx.navigation.fragment.findNavController
 import com.example.uniplanner.core.model.TareaModel
+import com.example.uniplanner.core.FragmentCommunicator
 
 class TareasFragment : Fragment() {
 
@@ -22,9 +23,11 @@ class TareasFragment : Fragment() {
     private val viewModel: HomeViewModel by activityViewModels()
     private val listaPendientes = mutableListOf<TareaModel>()
     private val listaCompletadas = mutableListOf<TareaModel>()
+    private lateinit var communicator: FragmentCommunicator
 
     private var adapterPendientes: TareasAdapter? = null
     private var adapterCompletadas: TareasAdapter? = null
+    private var materiaSeleccionadaActual= "Todas"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,11 +44,16 @@ class TareasFragment : Fragment() {
         binding.rvTareasPendientes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTareasCompletadas.layoutManager = LinearLayoutManager(requireContext())
 
+        binding.fabAddTarea.setOnClickListener {
+            mostrarDialogoAgregarTarea()
+        }
 
         // Escuchamos los datos de la API
         viewModel.homeDataState.observe(viewLifecycleOwner) { estado ->
             when (estado) {
-                is ResponseService.Loading -> {}
+                is ResponseService.Loading -> {
+                    communicator.manageLoader(true)
+                }
                 is ResponseService.Success -> {
                     if (!viewModel.datosInicialesCargados) {
                         viewModel.listaPendientesGlobal.clear()
@@ -53,9 +61,10 @@ class TareasFragment : Fragment() {
                         viewModel.listaCompletadasGlobal.clear()
                         viewModel.datosInicialesCargados = true
                     }
-                    setupAdapters()
+                    crearChipsDeMateriasDinamicos()
+                    filtrarYActualizarTareas()
 
-                    viewModel.actualizarContadorTareas(listaPendientes.size)
+                    viewModel.actualizarContadorTareas(viewModel.listaPendientesGlobal.size)
                 }
 
                 is ResponseService.Error -> {
@@ -63,9 +72,97 @@ class TareasFragment : Fragment() {
                 }
             }
         }
-        binding.fabAddTarea.setOnClickListener {
-            mostrarDialogoAgregarTarea()
+    }
+
+    // NUEVA FUNCIÓN: Genera los Chips en caliente basándose en los datos reales
+    private fun crearChipsDeMateriasDinamicos() {
+        val todasLasTareas = viewModel.listaPendientesGlobal + viewModel.listaCompletadasGlobal
+        // Obtenemos una lista de nombres de materias únicas y ordenadas
+        val materiasUnicas = todasLasTareas.map { it.materia }.distinct().sorted()
+
+        binding.chipGroupMaterias.removeAllViews()
+        // Creamos siempre el chip por defecto para ver "Todas"
+        val chipTodas = com.google.android.material.chip.Chip(requireContext()).apply {
+            text = "Todas"
+            isCheckable = true
+            isChecked = (materiaSeleccionadaActual == "Todas")
+            setOnClickListener {
+                materiaSeleccionadaActual = "Todas"
+                filtrarYActualizarTareas()
+            }
         }
+        binding.chipGroupMaterias.addView(chipTodas)
+
+        // Creamos un chip dinámico por cada materia que encontramos
+        materiasUnicas.forEach { nombreMateria ->
+            if (nombreMateria.isNotEmpty()) {
+                val nuevoChip = com.google.android.material.chip.Chip(requireContext()).apply {
+                    text = nombreMateria
+                    isCheckable = true
+                    isChecked = (materiaSeleccionadaActual == nombreMateria)
+
+                    // Al darle clic, actualizamos el filtro y refrescamos la lista
+                    setOnClickListener {
+                        materiaSeleccionadaActual = nombreMateria
+                        filtrarYActualizarTareas()
+                    }
+                }
+                binding.chipGroupMaterias.addView(nuevoChip)
+            }
+        }
+    }
+
+    private fun filtrarYActualizarTareas() {
+        val pendientesFiltradas = if (materiaSeleccionadaActual == "Todas") {
+            viewModel.listaPendientesGlobal
+        } else {
+            viewModel.listaPendientesGlobal.filter { it.materia.contains(materiaSeleccionadaActual, ignoreCase = true) }
+        }
+
+        // Filtrar Completadas
+        val completadasFiltradas = if (materiaSeleccionadaActual == "Todas") {
+            viewModel.listaCompletadasGlobal
+        } else {
+            viewModel.listaCompletadasGlobal.filter { it.materia.contains(materiaSeleccionadaActual, ignoreCase = true) }
+        }
+
+        //Si el RecyclerView de la vista no tiene adaptador, forzamos su creación inicial.
+        if (binding.rvTareasPendientes.adapter == null || binding.rvTareasCompletadas.adapter == null) {
+            setupAdaptersConListas(pendientesFiltradas, completadasFiltradas)
+        } else {
+            // Si la vista ya los tiene bien enlazados, solo refrescamos las listas
+            adapterPendientes?.updateList(pendientesFiltradas)
+            adapterCompletadas?.updateList(completadasFiltradas)
+        }
+    }
+
+    private fun setupAdaptersConListas(pendientes: List<TareaModel>, completadas: List<TareaModel>) {
+        adapterPendientes = TareasAdapter(pendientes.toMutableList(), false,
+            onItemClick = { tarea -> irADetalle(tarea) },
+            onCheckedChange = { tarea ->
+                viewModel.listaPendientesGlobal.remove(tarea)
+                viewModel.listaCompletadasGlobal.add(tarea)
+                actualizarVistas()
+            }
+        )
+        binding.rvTareasPendientes.adapter = adapterPendientes
+
+        adapterCompletadas = TareasAdapter(completadas.toMutableList(), true,
+            onItemClick = { tarea -> irADetalle(tarea) },
+            onCheckedChange = { tarea ->
+                viewModel.listaCompletadasGlobal.remove(tarea)
+                viewModel.listaPendientesGlobal.add(tarea)
+                actualizarVistas()
+            }
+        )
+        binding.rvTareasCompletadas.adapter = adapterCompletadas
+    }
+
+    // Cada vez que se altere el dataset (Alta, Baja o Cambio de estado), recalculamos los chips
+    private fun actualizarVistas() {
+        crearChipsDeMateriasDinamicos()
+        filtrarYActualizarTareas()
+        viewModel.actualizarContadorTareas(viewModel.listaPendientesGlobal.size)
     }
 
     private fun mostrarDialogoAgregarTarea() {
@@ -114,38 +211,6 @@ class TareasFragment : Fragment() {
         builder.show()
     }
 
-    private fun setupAdapters() {
-        // Adaptador de Tareas Pendientes (Lee de las listas globales del ViewModel)
-        adapterPendientes = TareasAdapter(viewModel.listaPendientesGlobal, false,
-            onItemClick = { tarea -> irADetalle(tarea) },
-            onCheckedChange = { tarea ->
-                // Alteramos las listas del ViewModel
-                viewModel.listaPendientesGlobal.remove(tarea)
-                viewModel.listaCompletadasGlobal.add(tarea)
-                actualizarVistas()
-            }
-        )
-        binding.rvTareasPendientes.adapter = adapterPendientes
-
-        // Adaptador de Tareas Completadas
-        adapterCompletadas = TareasAdapter(viewModel.listaCompletadasGlobal, true,
-            onItemClick = { tarea -> irADetalle(tarea) },
-            onCheckedChange = { tarea ->
-                viewModel.listaCompletadasGlobal.remove(tarea)
-                viewModel.listaPendientesGlobal.add(tarea)
-                actualizarVistas()
-            }
-        )
-        binding.rvTareasCompletadas.adapter = adapterCompletadas
-    }
-
-    private fun actualizarVistas() {
-        adapterPendientes?.updateList(viewModel.listaPendientesGlobal)
-        adapterCompletadas?.updateList(viewModel.listaCompletadasGlobal)
-
-        viewModel.actualizarContadorTareas(viewModel.listaPendientesGlobal.size)
-    }
-
     private fun irADetalle(tarea: TareaModel) {
         val bundle = Bundle().apply {
             putSerializable("item_tarea", tarea)
@@ -156,5 +221,7 @@ class TareasFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        adapterPendientes = null
+        adapterCompletadas = null
     }
 }
