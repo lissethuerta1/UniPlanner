@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registrar Asignatura"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Da de alta una materia en tu tira de materias"
+            android:textSize="14sp"
+            android:textColor="#64748B"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la Materia *"
+            android:textStyle="bold"
+            android:textColor="#475569"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etMatNombre"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Ej. Entorno Estratégico de TI"
+            android:background="@android:drawable/editbox_background"
+            android:paddingHorizontal="12dp"
+            android:inputType="textCapWords"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Horario *"
+            android:textStyle="bold"
+            android:textColor="#475569"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etMatHora"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Ej. 07:00 - 09:00"
+            android:background="@android:drawable/editbox_background"
+            android:paddingHorizontal="12dp"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Salón o Aula"
+            android:textStyle="bold"
+            android:textColor="#475569"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etMatSalon"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Ej. Edificio H-102"
+            android:background="@android:drawable/editbox_background"
+            android:paddingHorizontal="12dp"
+            android:inputType="textCapCharacters"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Días de clase *"
+            android:textStyle="bold"
+            android:textColor="#475569"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etMatDias"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Ej. Lunes, Miércoles, Viernes"
+            android:background="@android:drawable/editbox_background"
+            android:paddingHorizontal="12dp"
+            android:inputType="text"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnGuardarMateria"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Registrar Materia"
+            android:backgroundTint="#1040B9"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+</ScrollView>

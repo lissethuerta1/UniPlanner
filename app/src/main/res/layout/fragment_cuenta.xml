@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://tools.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
@@ -88,7 +88,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Información Académica"
+                android:text="Información del Alumno"
                 android:textColor="#475569"
                 android:textSize="13sp"
                 android:textStyle="bold"
@@ -105,7 +105,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_school"
+                    android:src="@drawable/ic_call"
                     app:tint="#6366F1" />
 
                 <LinearLayout
@@ -116,14 +116,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Licenciatura / Carrera"
+                        android:text="Teléfono de Contacto"
                         android:textColor="#94A3B8"
                         android:textSize="12sp" />
                     <TextView
-                        android:id="@+id/tvProfileCarrera"
+                        android:id="@+id/tvProfilePhone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Contaduría y Administración"
+                        android:text="No registrado"
                         android:textColor="#1E293B"
                         android:textSize="15sp"
                         android:fontFamily="sans-serif-medium" />
@@ -145,7 +145,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_person"
+                    android:src="@drawable/ic_calendar_today"
                     app:tint="#6366F1" />
 
                 <LinearLayout
@@ -156,14 +156,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Semestre Actual"
+                        android:text="Fecha de Nacimiento"
                         android:textColor="#94A3B8"
                         android:textSize="12sp" />
                     <TextView
-                        android:id="@+id/tvProfileSemestre"
+                        android:id="@+id/tvProfileBirthDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="6º Semestre"
+                        android:text="-- / -- / ----"
                         android:textColor="#1E293B"
                         android:textSize="15sp"
                         android:fontFamily="sans-serif-medium" />

@@ -12,6 +12,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.uniplanner.core.ResponseService
 import com.example.uniplanner.core.model.HorarioModel
+import androidx.navigation.fragment.findNavController
+import com.example.uniplanner.R
 
 class HorarioFragment : Fragment() {
     private var _binding: FragmentHorarioBinding? = null
@@ -20,6 +22,7 @@ class HorarioFragment : Fragment() {
     private val viewModel: HomeViewModel by activityViewModels()
     private var horarioAdapter: HorarioAdapter? = null
     private var todasLasClases: List<HorarioModel> = emptyList()
+    private var diaSeleccionadoActual = "Lunes"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,29 +37,29 @@ class HorarioFragment : Fragment() {
 
         binding.rvClasesHorario.layoutManager = LinearLayoutManager(requireContext())
 
+        binding.fabAddMateria.setOnClickListener {
+            findNavController().navigate(R.id.action_horarioFragment_to_registroMateriaFragment)
+        }
+
         // Escuchamos la API
         viewModel.homeDataState.observe(viewLifecycleOwner) { estado ->
             when (estado) {
-                is ResponseService.Loading -> {}
-                is ResponseService.Success -> {
-                    // Pasamos la lista de clases de internet al adaptador
-                    todasLasClases = estado.data.horario
-
-                    // Inicializamos el adaptador con el lunes por defecto
-                    val clasesLunes = todasLasClases.filter { it.dias.contains("Lunes", ignoreCase = true) }
-                    horarioAdapter = HorarioAdapter(clasesLunes)
-                    binding.rvClasesHorario.adapter = horarioAdapter
+                is ResponseService.Loading -> {
                 }
-
+                is ResponseService.Success -> {
+                    todasLasClases = viewModel.listaHorarioGlobal
+                    actualizarListaPorDia()
+                }
                 is ResponseService.Error -> {
                     Toast.makeText(requireContext(), estado.error, Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
+        // 4. Manejo de los Chips filtrados por día
         binding.chipGroupDias.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.isNotEmpty()) {
-                val diaSeleccionado = when (checkedIds.first()) {
+                diaSeleccionadoActual = when (checkedIds.first()) {
                     binding.chipLunes.id -> "Lunes"
                     binding.chipMartes.id -> "Martes"
                     binding.chipMiercoles.id -> "Miércoles"
@@ -64,14 +67,30 @@ class HorarioFragment : Fragment() {
                     binding.chipViernes.id -> "Viernes"
                     else -> "Lunes"
                 }
-                val clasesFiltradas = todasLasClases.filter { it.dias.contains(diaSeleccionado, ignoreCase = true) }
-                horarioAdapter?.updateList(clasesFiltradas)
+                actualizarListaPorDia()
             }
+        }
+    }
+
+    // funcion para filtrar y actualizar
+    private fun actualizarListaPorDia() {
+        todasLasClases = viewModel.listaHorarioGlobal
+
+        val clasesFiltradas = todasLasClases.filter {
+            it.dias.contains(diaSeleccionadoActual, ignoreCase = true)
+        }
+
+        if (binding.rvClasesHorario.adapter == null) {
+            horarioAdapter = HorarioAdapter(clasesFiltradas)
+            binding.rvClasesHorario.adapter = horarioAdapter
+        } else {
+            horarioAdapter?.updateList(clasesFiltradas)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        horarioAdapter = null
     }
 }

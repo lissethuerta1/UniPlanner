@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Detalles de la Materia"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#0F172A"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Asignatura:"
+            android:textSize="12sp"
+            android:textColor="#64748B"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tvDetalleMatNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la materia"
+            android:textSize="18sp"
+            android:textColor="#1E293B"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Horario de clase:"
+            android:textSize="12sp"
+            android:textColor="#64748B"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tvDetalleMatHora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="07:00 AM - 09:00 AM"
+            android:textSize="16sp"
+            android:textColor="#1E293B"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Salón / Aula:"
+            android:textSize="12sp"
+            android:textColor="#64748B"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tvDetalleMatSalon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Laboratorio o Aula"
+            android:textSize="16sp"
+            android:textColor="#1E293B"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Días de la semana:"
+            android:textSize="12sp"
+            android:textColor="#64748B"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tvDetalleMatDias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lunes, Miércoles"
+            android:textSize="16sp"
+            android:textColor="#10B981"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnEliminarMateria"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Eliminar Asignatura"
+            android:backgroundTint="#4483EF"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+</ScrollView>

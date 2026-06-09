@@ -1,6 +1,8 @@
 package com.example.uniplanner.home.horario
 
 import android.view.LayoutInflater
+import android.os.Bundle
+import com.example.uniplanner.R
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.uniplanner.core.model.HorarioModel
@@ -19,12 +21,18 @@ class HorarioAdapter(private var listaClases: List<HorarioModel>) :
     }
 
     override fun onBindViewHolder(holder: HorarioViewHolder, position: Int) {
-        val clase = listaClases[position]
+        val clase = listaClases[position] // 🟢 Tu variable se llama 'clase'
 
-        // Inyectamos los datos del JSON global
         holder.binding.tvNombreMateria.text = clase.materia
         holder.binding.tvHora.text = clase.hora
         holder.binding.tvSalonClase.text = clase.salon
+
+        holder.itemView.setOnClickListener {
+            val bundle = Bundle().apply { putSerializable("item_materia", clase) }
+
+            androidx.navigation.Navigation.findNavController(holder.itemView)
+                .navigate(R.id.action_horarioFragment_to_detallesMateriaFragment, bundle)
+        }
     }
 
     override fun getItemCount(): Int = listaClases.size

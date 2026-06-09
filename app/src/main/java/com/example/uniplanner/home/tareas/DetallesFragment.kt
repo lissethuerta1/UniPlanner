@@ -10,7 +10,6 @@ import com.example.uniplanner.databinding.FragmentDetallesBinding
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.fragment.app.viewModels
 import com.example.uniplanner.home.HomeViewModel
 import kotlin.getValue
 
@@ -32,11 +31,9 @@ class DetallesFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Recuperamos el objeto TareaModel que se pasó desde el RecyclerView
         val tarea = arguments?.getSerializable("item_tarea") as? TareaModel
 
         tarea?.let {
-            // Inyectamos los datos en tu layout premium de detalle
             binding.tvDetailTitulo.text = it.titulo
             binding.tvDetailMateria.text = it.materia
             binding.tvDetailFecha.text = it.fechaEntrega
@@ -45,14 +42,13 @@ class DetallesFragment : Fragment(){
         }
 
         binding.btnEliminar.setOnClickListener {
-            // Creamos una alerta de confirmación estética
             android.app.AlertDialog.Builder(requireContext())
                 .setTitle("¿Eliminar Tarea?")
                 .setMessage("Esta acción quitará la actividad de tu UniPlanner de forma permanente.")
                 .setPositiveButton("Eliminar") { dialog, _ ->
 
                     // 1. Ejecutamos la baja en el ViewModel central
-                    viewModel.eliminarTarea(tarea!!)
+                    viewModel.eliminarTareaDeFirebase(tarea!!.idTarea)
 
                     Toast.makeText(requireContext(), "Tarea eliminada", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()

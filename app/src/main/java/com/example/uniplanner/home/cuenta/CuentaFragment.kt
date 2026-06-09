@@ -34,8 +34,6 @@ class CuentaFragment : Fragment() {
 
         currentUser?.let { user ->
             binding.tvProfileEmail.text = user.email
-
-            //Disparamos la lectura a la base de datos usando el UID de la sesión activa
             viewModel.getUserProfile(user.uid)
         }
 
@@ -48,9 +46,11 @@ class CuentaFragment : Fragment() {
                 is ResponseService.Success -> {
                     val datosUsuario = estado.data
 
-                    // Extraemos los campos exactamente con el mismo nombre que se guardaron
                     val nombre = datosUsuario["firstName"] as? String ?: ""
                     val apellido = datosUsuario["lastName"] as? String ?: ""
+
+                    val telefono = datosUsuario["phone"] as? String ?: "No registrado"
+                    val fechaNacimiento = datosUsuario["birthDate"] as? String ?: "-- / -- / ----"
 
                     // Concatenamos el nombre y el apellido
                     if (nombre.isNotEmpty() || apellido.isNotEmpty()) {
@@ -58,9 +58,11 @@ class CuentaFragment : Fragment() {
                     } else {
                         binding.tvProfileName.text = "Alumno UniPlanner"
                     }
+
+                    binding.tvProfilePhone.text = telefono
+                    binding.tvProfileBirthDate.text = fechaNacimiento
                 }
                 is ResponseService.Error -> {
-                    // Si algo falla, dejamos un nombre por defecto
                     binding.tvProfileName.text = "Alumno UniPlanner"
                     Toast.makeText(requireContext(), estado.error, Toast.LENGTH_SHORT).show()
                 }
@@ -71,7 +73,6 @@ class CuentaFragment : Fragment() {
         binding.btnLogout.setOnClickListener {
             auth.signOut()
 
-            // Lo redirigimos de vuelta a la pantalla de Login para bloquear el acceso
             val intent = Intent(requireContext(), com.example.uniplanner.onboarding.MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_tareasFragment_to_detallesFragment"
             app:destination="@id/detallesFragment" />
+        <action
+            android:id="@+id/action_tareasFragment_to_registroTareaFragment"
+            app:destination="@id/registroTareaFragment" />
     </fragment>
 
 
@@ -26,7 +29,17 @@
         android:id="@+id/horarioFragment"
         android:name="com.example.uniplanner.home.horario.HorarioFragment"
         android:label="Horario"
-        tools:layout="@layout/fragment_horario" />
+        tools:layout="@layout/fragment_horario">
+
+    <action
+        android:id="@+id/action_horarioFragment_to_registroMateriaFragment"
+        app:destination="@id/registroMateriaFragment" />
+
+        <action
+            android:id="@+id/action_horarioFragment_to_detallesMateriaFragment"
+            app:destination="@id/detallesMateriaFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/cuentaFragment"
@@ -39,5 +52,23 @@
         android:name="com.example.uniplanner.home.tareas.DetallesFragment"
         android:label="Detalle de Tarea"
         tools:layout="@layout/fragment_detalles" />
+
+    <fragment
+        android:id="@+id/registroTareaFragment"
+        android:name="com.example.uniplanner.home.tareas.RegistroTareaFragment"
+        android:label="Registrar Nueva Tarea"
+        tools:layout="@layout/fragment_registro_tarea" />
+
+    <fragment
+        android:id="@+id/registroMateriaFragment"
+        android:name="com.example.uniplanner.home.materias.RegistroMateriaFragment"
+        android:label="Registrar Nueva Materia"
+        tools:layout="@layout/fragment_registro_materia" />
+
+    <fragment
+        android:id="@+id/detallesMateriaFragment"
+        android:name="com.example.uniplanner.home.materias.DetallesMateriaFragment"
+        android:label="Detalles de la Materia"
+        tools:layout="@layout/fragment_detalles_materia" />
 
 </navigation>

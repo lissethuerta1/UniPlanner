@@ -106,4 +106,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_materia_placeholder_diseno" />
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAddMateria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="30dp"
+        android:text="Nueva Materia"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#104EB9"
+        app:icon="@drawable/ic_add"
+        app:iconTint="#FFFFFF"
+        app:cornerSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
