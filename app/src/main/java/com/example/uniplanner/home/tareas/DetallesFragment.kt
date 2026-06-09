@@ -42,22 +42,23 @@ class DetallesFragment : Fragment(){
         }
 
         binding.btnEliminar.setOnClickListener {
-            android.app.AlertDialog.Builder(requireContext())
-                .setTitle("¿Eliminar Tarea?")
-                .setMessage("Esta acción quitará la actividad de tu UniPlanner de forma permanente.")
-                .setPositiveButton("Eliminar") { dialog, _ ->
+            tarea?.let { tareaSegura ->
+                android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("¿Eliminar Tarea?")
+                    .setMessage("Esta acción quitará la actividad de tu UniPlanner de forma permanente.")
+                    .setPositiveButton("Eliminar") { dialog, _ ->
 
-                    // 1. Ejecutamos la baja en el ViewModel central
-                    viewModel.eliminarTareaDeFirebase(tarea!!.idTarea)
+                        //Garantizamos que id no sea nula
+                        viewModel.eliminarTareaDeFirebase(tareaSegura.idTarea)
 
-                    Toast.makeText(requireContext(), "Tarea eliminada", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
+                        Toast.makeText(requireContext(), "Tarea eliminada", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
 
-                    // 2. Regresamos automáticamente a la pantalla anterior (TareasFragment)
-                    findNavController().popBackStack()
-                }
-                .setNegativeButton("Cancelar", null)
-                .show()
+                        findNavController().popBackStack()
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
         }
     }
 

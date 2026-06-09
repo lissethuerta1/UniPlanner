@@ -13,14 +13,12 @@ import com.example.uniplanner.core.ResponseService
 import com.example.uniplanner.home.HomeViewModel
 import com.example.uniplanner.R
 import androidx.navigation.fragment.findNavController
-import com.example.uniplanner.core.FragmentCommunicator
 import com.example.uniplanner.core.model.TareaModel
 
 class TareasFragment : Fragment() {
     private var _binding: FragmentTareasBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by activityViewModels()
-    private lateinit var communicator: FragmentCommunicator
     private var adapterPendientes: TareasAdapter? = null
     private var adapterCompletadas: TareasAdapter? = null
     private var materiaSeleccionadaActual = "Todas"
@@ -47,7 +45,6 @@ class TareasFragment : Fragment() {
         viewModel.homeDataState.observe(viewLifecycleOwner) { estado ->
             when (estado) {
                 is ResponseService.Loading -> {
-                    communicator.manageLoader(true)
                 }
                 is ResponseService.Success -> {
                     actualizarVistas()
