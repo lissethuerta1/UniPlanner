@@ -41,7 +41,6 @@ class TareasFragment : Fragment() {
             findNavController().navigate(R.id.action_tareasFragment_to_registroTareaFragment)
         }
 
-        //Observador del estado de datos
         viewModel.homeDataState.observe(viewLifecycleOwner) { estado ->
             when (estado) {
                 is ResponseService.Loading -> {

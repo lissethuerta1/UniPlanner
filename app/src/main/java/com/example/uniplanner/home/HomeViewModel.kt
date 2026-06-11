@@ -10,29 +10,30 @@ import com.example.uniplanner.core.repository.TareasRepository
 import kotlinx.coroutines.launch
 import com.example.uniplanner.core.model.TareaModel
 import com.example.uniplanner.core.model.HorarioModel
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
+
 
 class HomeViewModel : ViewModel() {
-
     private val repository = TareasRepository()
+    private val db = FirebaseFirestore.getInstance()
     private val _homeDataState = MutableLiveData<ResponseService<ProyectResponse>>()
     val homeDataState: LiveData<ResponseService<ProyectResponse>> get() = _homeDataState
     private val _userProfileState = MutableLiveData<ResponseService<Map<String, Any>>>()
     val userProfileState: LiveData<ResponseService<Map<String, Any>>> get() = _userProfileState
     private val _contadorTareasReales = MutableLiveData<Int>(0)
     val contadorTareasReales: LiveData<Int> get() = _contadorTareasReales
-    private val _contadorClasesHoy = MutableLiveData<Int>(0)
+    val _contadorClasesHoy = MutableLiveData<Int>(0)
     val contadorClasesHoy: LiveData<Int> get() = _contadorClasesHoy
     val listaPendientesGlobal = mutableListOf<TareaModel>()
-    val listaCompletadasGlobal = mutableListOf<TareaModel>()
     val listaHorarioGlobal = mutableListOf<HorarioModel>()
+    val listaCompletadasGlobal = mutableListOf<TareaModel>()
     var datosInicialesCargados = false
-    private val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
 
     fun actualizarContadorTareas(nuevoTotal: Int) {
         _contadorTareasReales.value = nuevoTotal
     }
 
-    //Función para actualizar las clases del día actual
     fun calcularClasesDeHoy(diaSemana: String) {
         val clasesHoy = listaHorarioGlobal.filter { it.dias.contains(diaSemana, ignoreCase = true) }
         _contadorClasesHoy.value = clasesHoy.size
@@ -40,91 +41,73 @@ class HomeViewModel : ViewModel() {
 
     fun getUserProfile(uid: String) {
         _userProfileState.value = ResponseService.Loading
-        db.collection("users")
-            .document(uid)
-            .get()
-            .addOnSuccessListener { document ->
+        viewModelScope.launch {
+            try {
+                val document = db.collection("users").document(uid).get().await()
                 if (document != null && document.exists()) {
                     _userProfileState.postValue(ResponseService.Success(document.data ?: emptyMap()))
                 } else {
                     _userProfileState.postValue(ResponseService.Error("El perfil no existe"))
                 }
+            } catch (e: Exception) {
+                _userProfileState.postValue(ResponseService.Error(e.message ?: "Error al obtener datos"))
             }
-            .addOnFailureListener { exception ->
-                _userProfileState.postValue(ResponseService.Error(exception.message ?: "Error al obtener datos"))
-            }
+        }
     }
 
     fun getHomeData() {
         _homeDataState.value = ResponseService.Loading
 
         viewModelScope.launch {
-            val result = repository.fetchUniPlannerData()
+            try {
+                val resultAPI = repository.fetchUniPlannerData()
 
-            if (result is ResponseService.Success) {
-                val responseData = result.data
+                if (resultAPI is ResponseService.Success) {
+                    val responseData = resultAPI.data
 
-                listaPendientesGlobal.clear()
-                listaCompletadasGlobal.clear()
-                listaHorarioGlobal.clear()
+                    listaPendientesGlobal.clear()
+                    listaHorarioGlobal.clear()
+                    listaCompletadasGlobal.clear()
 
-                listaPendientesGlobal.addAll(responseData.tareas)
-                listaHorarioGlobal.addAll(responseData.horario)
+                    listaPendientesGlobal.addAll(responseData.tareas)
+                    listaHorarioGlobal.addAll(responseData.horario)
 
-                cargarTareasDesdeFirestore(responseData)
-                cargarMateriasDesdeFirestore(responseData)
+                    val tareasSnapshot = db.collection("tareas").get().await()
+                    for (document in tareasSnapshot.documents) {
+                        val tareaFirebase = document.toObject(TareaModel::class.java)
+                        if (tareaFirebase != null) {
+                            if (!listaPendientesGlobal.any { it.idTarea == tareaFirebase.idTarea }) {
+                                listaPendientesGlobal.add(0, tareaFirebase)
+                            }
+                        }
+                    }
 
-            } else {
-                _homeDataState.postValue(result)
+                    val materiasSnapshot = db.collection("materias").get().await()
+                    for (document in materiasSnapshot.documents) {
+                        val materiaFirebase = document.toObject(HorarioModel::class.java)
+                        if (materiaFirebase != null) {
+                            if (!listaHorarioGlobal.any { it.idClase == materiaFirebase.idClase }) {
+                                listaHorarioGlobal.add(materiaFirebase)
+                            }
+                        }
+                    }
+
+                    actualizarContadorTareas(listaPendientesGlobal.size)
+                    datosInicialesCargados = true
+
+                    val respuestaUnificada = responseData.copy(
+                        tareas = listaPendientesGlobal,
+                        horario = listaHorarioGlobal
+                    )
+                    _homeDataState.postValue(ResponseService.Success(respuestaUnificada))
+
+                } else {
+                    _homeDataState.postValue(resultAPI)
+                }
+            } catch (e: Exception) {
+                _homeDataState.postValue(ResponseService.Error(e.message ?: "Error en la sincronización de datos"))
             }
         }
-    }
-
-    private fun cargarTareasDesdeFirestore(responseData: ProyectResponse) {
-        db.collection("tareas")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                for (document in snapshot.documents) {
-                    val tareaFirebase = document.toObject(TareaModel::class.java)
-                    if (tareaFirebase != null) {
-                        if (!listaPendientesGlobal.any { it.idTarea == tareaFirebase.idTarea }) {
-                            listaPendientesGlobal.add(0, tareaFirebase)
-                        }
-                    }
-                }
-                actualizarContadorTareas(listaPendientesGlobal.size)
-                notificarCambiosAUI(responseData)
-            }
-            .addOnFailureListener {
-                notificarCambiosAUI(responseData)
-            }
-    }
-
-    private fun cargarMateriasDesdeFirestore(responseData: ProyectResponse) {
-        db.collection("materias")
-            .get()
-            .addOnSuccessListener { matSnapshot ->
-                for (document in matSnapshot.documents) {
-                    val materiaFirebase = document.toObject(HorarioModel::class.java)
-                    if (materiaFirebase != null) {
-                        if (!listaHorarioGlobal.any { it.idClase == materiaFirebase.idClase }) {
-                            listaHorarioGlobal.add(materiaFirebase)
-                        }
-                    }
-                }
-                notificarCambiosAUI(responseData)
-            }
-            .addOnFailureListener {
-                notificarCambiosAUI(responseData)
-            }
-    }
-
-    private fun notificarCambiosAUI(responseData: ProyectResponse) {
-        val respuestaUnificada = responseData.copy(
-            tareas = listaPendientesGlobal,
-            horario = listaHorarioGlobal
-        )
-        _homeDataState.postValue(ResponseService.Success(respuestaUnificada))
     }
 
     fun agregarNuevaTarea(titulo: String, materia: String, fecha: String, descripcion: String, priority: String) {
@@ -137,8 +120,14 @@ class HomeViewModel : ViewModel() {
             descripcion = descripcion,
             priority = priority
         )
+
         listaPendientesGlobal.add(0, nuevaTarea)
         actualizarContadorTareas(listaPendientesGlobal.size)
+
+        val currentState = _homeDataState.value
+        if (currentState is ResponseService.Success) {
+            _homeDataState.postValue(ResponseService.Success(currentState.data.copy(tareas = ArrayList(listaPendientesGlobal))))
+        }
 
         db.collection("tareas")
             .document(idGenerado)
@@ -156,6 +145,10 @@ class HomeViewModel : ViewModel() {
         )
 
         listaHorarioGlobal.add(nuevaMateria)
+        val currentState = _homeDataState.value
+        if (currentState is ResponseService.Success) {
+            _homeDataState.postValue(ResponseService.Success(currentState.data.copy(horario = ArrayList(listaHorarioGlobal))))
+        }
 
         db.collection("materias")
             .document(idGenerado)
@@ -169,6 +162,10 @@ class HomeViewModel : ViewModel() {
                 listaPendientesGlobal.removeAll { it.idTarea == idTarea }
                 listaCompletadasGlobal.removeAll { it.idTarea == idTarea }
                 actualizarContadorTareas(listaPendientesGlobal.size)
+                val currentState = _homeDataState.value
+                if (currentState is ResponseService.Success) {
+                    _homeDataState.postValue(ResponseService.Success(currentState.data.copy(tareas = ArrayList(listaPendientesGlobal))))
+                }
             }
     }
 
@@ -177,6 +174,10 @@ class HomeViewModel : ViewModel() {
             .delete()
             .addOnSuccessListener {
                 listaHorarioGlobal.removeAll { it.idClase == idMateria }
+                val currentState = _homeDataState.value
+                if (currentState is ResponseService.Success) {
+                    _homeDataState.postValue(ResponseService.Success(currentState.data.copy(horario = ArrayList(listaHorarioGlobal))))
+                }
             }
     }
 }
