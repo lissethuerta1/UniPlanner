@@ -13,18 +13,22 @@ import com.example.uniplanner.core.model.HorarioModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-
 class HomeViewModel : ViewModel() {
     private val repository = TareasRepository()
     private val db = FirebaseFirestore.getInstance()
+
     private val _homeDataState = MutableLiveData<ResponseService<ProyectResponse>>()
     val homeDataState: LiveData<ResponseService<ProyectResponse>> get() = _homeDataState
+
     private val _userProfileState = MutableLiveData<ResponseService<Map<String, Any>>>()
     val userProfileState: LiveData<ResponseService<Map<String, Any>>> get() = _userProfileState
+
     private val _contadorTareasReales = MutableLiveData<Int>(0)
     val contadorTareasReales: LiveData<Int> get() = _contadorTareasReales
-    val _contadorClasesHoy = MutableLiveData<Int>(0)
+
+    private val _contadorClasesHoy = MutableLiveData<Int>(0)
     val contadorClasesHoy: LiveData<Int> get() = _contadorClasesHoy
+
     val listaPendientesGlobal = mutableListOf<TareaModel>()
     val listaHorarioGlobal = mutableListOf<HorarioModel>()
     val listaCompletadasGlobal = mutableListOf<TareaModel>()
@@ -35,7 +39,9 @@ class HomeViewModel : ViewModel() {
     }
 
     fun calcularClasesDeHoy(diaSemana: String) {
-        val clasesHoy = listaHorarioGlobal.filter { it.dias.contains(diaSemana, ignoreCase = true) }
+        val clasesHoy = listaHorarioGlobal.filter {
+            it.dias.lowercase().contains(diaSemana.lowercase())
+        }
         _contadorClasesHoy.value = clasesHoy.size
     }
 
@@ -72,6 +78,7 @@ class HomeViewModel : ViewModel() {
                     listaPendientesGlobal.addAll(responseData.tareas)
                     listaHorarioGlobal.addAll(responseData.horario)
 
+                    // Carga de Tareas desde Firestore
                     val tareasSnapshot = db.collection("tareas").get().await()
                     for (document in tareasSnapshot.documents) {
                         val tareaFirebase = document.toObject(TareaModel::class.java)
@@ -82,6 +89,7 @@ class HomeViewModel : ViewModel() {
                         }
                     }
 
+                    // Carga de Materias desde Firestore
                     val materiasSnapshot = db.collection("materias").get().await()
                     for (document in materiasSnapshot.documents) {
                         val materiaFirebase = document.toObject(HorarioModel::class.java)
@@ -92,7 +100,12 @@ class HomeViewModel : ViewModel() {
                         }
                     }
 
+                    // Actualizamos contadores globales una vez unificadas las listas
                     actualizarContadorTareas(listaPendientesGlobal.size)
+                    if (!datosInicialesCargados) {
+                        calcularClasesDeHoy("Lunes")
+                    }
+
                     datosInicialesCargados = true
 
                     val respuestaUnificada = responseData.copy(
@@ -129,9 +142,7 @@ class HomeViewModel : ViewModel() {
             _homeDataState.postValue(ResponseService.Success(currentState.data.copy(tareas = ArrayList(listaPendientesGlobal))))
         }
 
-        db.collection("tareas")
-            .document(idGenerado)
-            .set(nuevaTarea)
+        db.collection("tareas").document(idGenerado).set(nuevaTarea)
     }
 
     fun registrarNuevaMateria(nombreMateria: String, hora: String, salon: String, dias: String) {
@@ -145,14 +156,13 @@ class HomeViewModel : ViewModel() {
         )
 
         listaHorarioGlobal.add(nuevaMateria)
+
         val currentState = _homeDataState.value
         if (currentState is ResponseService.Success) {
             _homeDataState.postValue(ResponseService.Success(currentState.data.copy(horario = ArrayList(listaHorarioGlobal))))
         }
 
-        db.collection("materias")
-            .document(idGenerado)
-            .set(nuevaMateria)
+        db.collection("materias").document(idGenerado).set(nuevaMateria)
     }
 
     fun eliminarTareaDeFirebase(idTarea: String) {
@@ -162,6 +172,7 @@ class HomeViewModel : ViewModel() {
                 listaPendientesGlobal.removeAll { it.idTarea == idTarea }
                 listaCompletadasGlobal.removeAll { it.idTarea == idTarea }
                 actualizarContadorTareas(listaPendientesGlobal.size)
+
                 val currentState = _homeDataState.value
                 if (currentState is ResponseService.Success) {
                     _homeDataState.postValue(ResponseService.Success(currentState.data.copy(tareas = ArrayList(listaPendientesGlobal))))
@@ -174,6 +185,7 @@ class HomeViewModel : ViewModel() {
             .delete()
             .addOnSuccessListener {
                 listaHorarioGlobal.removeAll { it.idClase == idMateria }
+
                 val currentState = _homeDataState.value
                 if (currentState is ResponseService.Success) {
                     _homeDataState.postValue(ResponseService.Success(currentState.data.copy(horario = ArrayList(listaHorarioGlobal))))

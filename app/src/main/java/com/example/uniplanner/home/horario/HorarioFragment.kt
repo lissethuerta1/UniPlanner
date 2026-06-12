@@ -80,6 +80,8 @@ class HorarioFragment : Fragment() {
             it.dias.contains(diaSeleccionadoActual, ignoreCase = true)
         }
 
+        viewModel.calcularClasesDeHoy(diaSeleccionadoActual)
+
         if (binding.rvClasesHorario.adapter == null) {
             horarioAdapter = HorarioAdapter(clasesFiltradas)
             binding.rvClasesHorario.adapter = horarioAdapter

@@ -27,6 +27,8 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.getHomeData()
+
         viewModel.homeDataState.observe(viewLifecycleOwner) { estado ->
             when (estado) {
                 is ResponseService.Loading -> { }
@@ -40,18 +42,14 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        //Observar el contador real de tareas pendientes
+        // Observar el contador real de tareas pendientes
         viewModel.contadorTareasReales.observe(viewLifecycleOwner) { totalPendientes ->
             binding.tvCountTareas.text = totalPendientes.toString()
         }
 
-        //Calcular qué día es hoy para filtrar el horario real
-        val sdf = java.text.SimpleDateFormat("EEEE", java.util.Locale("es", "MX"))
-        val diaDeHoy = sdf.format(java.util.Date()).replaceFirstChar { it.uppercase() }
 
-        viewModel.calcularClasesDeHoy(diaDeHoy)
 
-        //Observar el contador real de clases del día
+        // Observar el contador real de clases del día
         viewModel.contadorClasesHoy.observe(viewLifecycleOwner) { totalClases ->
             binding.tvCountClases.text = totalClases.toString()
         }
